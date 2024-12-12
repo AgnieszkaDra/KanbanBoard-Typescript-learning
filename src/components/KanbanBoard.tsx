@@ -42,7 +42,7 @@ function KanbanBoard() {
             >
               <div
                 className="m-auto flex gap-4"
-            >
+                >
                <div className="flex gap-4">
                 <SortableContext items={columnsId}>
                     {columns.map((col) => (
@@ -147,6 +147,8 @@ function KanbanBoard() {
     function deleteColumn(id: Id) {
         const filteredColumns = columns.filter((col) => col.id !==id)
         setColumns(filteredColumns)
+        const newTasks = tasks.filter(t => t.columnId !== id)
+        setTasks(newTasks)
     }
 
     function updateColumn(id: Id, title: string) {
@@ -175,18 +177,18 @@ function KanbanBoard() {
         const { active, over } = event;
         if(!over) return;
 
-        const activeColumnId = active.id;
-        const overColumnId = over.id
+        const activeId = active.id;
+        const overId = over.id
 
-        if(activeColumnId === overColumnId) return;
+        if(activeId === overId) return;
 
         setColumns(columns => {
             const activeColumnIndex = columns.findIndex(
-                col => col.id === activeColumnId
+                col => col.id === activeId
             )
 
             const overColumnIndex = columns.findIndex(
-                (col) => col.id === overColumnId
+                (col) => col.id === overId
             )
 
             return arrayMove(columns, activeColumnIndex, overColumnIndex)
@@ -206,10 +208,10 @@ function KanbanBoard() {
         const isActiveATask = active.data.current?.type === "Task"
         const isOverATask = over.data.current?.type === "Task"
 
+        if(!isActiveATask) return
        
         if(isActiveATask && isOverATask) {
-            alert('actibee')
-            setTasks(tasks => {
+            setTasks((tasks) => {
                 const activeIndex = tasks.findIndex(t => t.id === activeId)
                 const overIndex = tasks.findIndex((t) => t.id === overId)
                 tasks[activeIndex].columnId = tasks[overIndex].columnId
@@ -217,7 +219,21 @@ function KanbanBoard() {
                 return arrayMove(tasks, activeIndex, overIndex)
             })
         }
- // I am dropping a Task over a column
+
+        // I am dropping a Task over a column
+
+        const isOverAColumn = over.data.current?.type === 'Column'
+
+        if(isActiveATask && isOverAColumn) {
+            setTasks((tasks) => {
+                const activeIndex = tasks.findIndex(t => t.id === activeId)
+                
+                tasks[activeIndex].columnId = overId
+           
+                return arrayMove(tasks, activeIndex, activeIndex)
+            })
+        }
+
     }
 }
 

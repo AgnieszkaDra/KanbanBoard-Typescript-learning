@@ -48,7 +48,8 @@ function ColumnContainer(props: Props) {
     };
 
     if(isDragging) {
-        return <div 
+        return (
+        <div 
         ref={setNodeRef} 
         style={style}
         className="
@@ -63,8 +64,8 @@ function ColumnContainer(props: Props) {
         flex
         flex-col
         "
-        >hello</div>
-    }
+        />
+    )}
 
     return (
         <div
